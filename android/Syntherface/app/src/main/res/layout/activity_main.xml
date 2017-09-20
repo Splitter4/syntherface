@@ -7,7 +7,7 @@
     android:orientation="vertical" >
 
     <EditText
-        android:id="@+id/inputText"
+        android:id="@+id/input_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -19,14 +19,14 @@
         android:orientation="horizontal" >
 
         <Button
-            android:id="@+id/connectButton"
+            android:id="@+id/connect_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:text="@string/connect_button" />
 
         <Button
-            android:id="@+id/disconnectButton"
+            android:id="@+id/disconnect_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -34,14 +34,14 @@
             android:visibility="gone" />
 
         <Button
-            android:id="@+id/sendButton"
+            android:id="@+id/send_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/clearButton"
+            android:layout_toLeftOf="@+id/clear_button"
             android:text="@string/send_button" />
 
         <Button
-            android:id="@+id/clearButton"
+            android:id="@+id/clear_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
