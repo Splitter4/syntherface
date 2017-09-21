@@ -45,13 +45,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_weight="1"
             android:text="@string/clear_button" />
 
     </RelativeLayout>
 
     <TextView
-        android:id="@+id/consoleTextView"
+        android:id="@+id/console_text_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
