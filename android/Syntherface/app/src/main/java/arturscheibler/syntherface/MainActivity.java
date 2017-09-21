@@ -4,6 +4,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -11,6 +13,8 @@ public class MainActivity extends AppCompatActivity {
     private Button mDisconnectButton;
     private Button mSendButton;
     private Button mClearButton;
+    private EditText mInputText;
+    private TextView mConsoleTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
+        
+        mInputText = (EditText)findViewById(R.id.input_text);
+        mConsoleTextView = (TextView)findViewById(R.id.console_text_view);
     }
 }
