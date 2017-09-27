@@ -29,9 +29,8 @@
             android:id="@+id/disconnect_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:text="@string/disconnect_button"
-            android:visibility="gone" />
+            android:layout_toRightOf="@+id/connect_button"
+            android:text="@string/disconnect_button" />
 
         <Button
             android:id="@+id/send_button"
