@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     public final String DEVICE_ADDRESS = "98:D3:36:80:F6:8D"; // TODO: Get address from list of paired devices
     public final UUID PORT_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb"); // Serial Port Service ID
     
-    private BluetoothDevice mDevice;
+    private BluetoothAdapter mBluetoothAdapter;
     private BluetoothSocket mSocket;
     private InputStream mInputStream;
     private OutputStream mOutputStream;
@@ -43,26 +43,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+    
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         mConnectButton = (Button)findViewById(R.id.connect_button);
         mConnectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDevice = getDevice(DEVICE_ADDRESS);
-                if(mDevice != null) {
-                    try {
-                        mSocket = mDevice.createRfcommSocketToServiceRecord(PORT_UUID);
-                        mSocket.connect();
-
-                        mOutputStream = mSocket.getOutputStream();
-                        mInputStream = mSocket.getInputStream();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        Toast.makeText(getApplicationContext(), "Error connecting to device.", Toast.LENGTH_SHORT).show();
-                    } finally {
-                        setConnectionStatus(true);
-                        mConsoleTextView.append("Connection Opened!\n\n");
-                        beginListenForData();
+                if (mBluetoothAdapter == null) {
+                    Toast.makeText(getApplicationContext(), "This device doesn't support Bluetooth.", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (!mBluetoothAdapter.isEnabled()) {
+                        Intent enableAdapter = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        startActivityForResult(enableAdapter, REQUEST_ENABLE_BT);
+                    } else {
+                        BluetoothDevice device = getDevice(DEVICE_ADDRESS);
+                        connectToDevice(device);
                     }
                 }
             }
@@ -134,34 +130,43 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothDevice getDevice(String deviceAddress) {
         BluetoothDevice device = null;
         
-        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (bluetoothAdapter == null) {
-            Toast.makeText(getApplicationContext(), "This device doesn't support Bluetooth.", Toast.LENGTH_SHORT).show();
+        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+        if (pairedDevices.isEmpty()) {
+            Toast.makeText(getApplicationContext(), "Please pair with the Bluetooth device.", Toast.LENGTH_SHORT).show();
         } else {
-            if (!bluetoothAdapter.isEnabled()) {
-                Intent enableAdapter = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableAdapter, REQUEST_ENABLE_BT);
-            }
-            
-            Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
-            if (pairedDevices.isEmpty()) {
-                Toast.makeText(getApplicationContext(), "Please pair with the Bluetooth device.", Toast.LENGTH_SHORT).show();
-            } else {
-                for (BluetoothDevice bondedDevice : pairedDevices) {
-                    // Found device by address
-                    if (bondedDevice.getAddress().equals(deviceAddress)) {
-                        mConsoleTextView.append("Found device:\n");
-                        mConsoleTextView.append(bondedDevice.getName() + "\n");
-                        mConsoleTextView.append(bondedDevice.getAddress() + "\n\n");
-                        
-                        device = bondedDevice;
-                        break;
-                    }
+            for (BluetoothDevice bondedDevice : pairedDevices) {
+                // Found device by address
+                if (bondedDevice.getAddress().equals(deviceAddress)) {
+                    mConsoleTextView.append("Found device:\n");
+                    mConsoleTextView.append(bondedDevice.getName() + "\n");
+                    mConsoleTextView.append(bondedDevice.getAddress() + "\n\n");
+                    
+                    device = bondedDevice;
+                    break;
                 }
             }
         }
 
         return device;
+    }
+    
+    private void connectToDevice(BluetoothDevice device) {
+        if(device != null) {
+            try {
+                mSocket = device.createRfcommSocketToServiceRecord(PORT_UUID);
+                mSocket.connect();
+            
+                mOutputStream = mSocket.getOutputStream();
+                mInputStream = mSocket.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(), "Error connecting to device.", Toast.LENGTH_SHORT).show();
+            } finally {
+                setConnectionStatus(true);
+                mConsoleTextView.append("Connection Opened!\n\n");
+                beginListenForData();
+            }
+        }
     }
 
     void beginListenForData() {
@@ -196,15 +201,14 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_ENABLE_BT) {
-            if (resultCode == RESULT_CANCELED) {
+            if (resultCode == RESULT_OK) {
+                BluetoothDevice device = getDevice(DEVICE_ADDRESS);
+                connectToDevice(device);
+            } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(getApplicationContext(), "Bluetooth needs to be activated for the app to work!", Toast.LENGTH_SHORT).show();
-            }
-            else if (resultCode != RESULT_OK) {
+            } else {
                 Toast.makeText(getApplicationContext(), "Unrecognized result when trying to enable Bluetooth.", Toast.LENGTH_SHORT).show();
             }
-    
-            Toast.makeText(getApplicationContext(), "Nice.", Toast.LENGTH_SHORT).show();
-            mEnableBtIntentReturned = true;
         }
     }
 }
