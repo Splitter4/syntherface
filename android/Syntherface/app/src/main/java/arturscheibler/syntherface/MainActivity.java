@@ -5,8 +5,10 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,9 +21,10 @@ import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends FragmentActivity implements DeviceDialogFragment.DeviceDialogListener {
 
     public final static int REQUEST_ENABLE_BT = 1;
+    public final static String DIALOG_DEVICE = "device";
     public final String DEVICE_ADDRESS = "98:D3:36:80:F6:8D"; // TODO: Get address from list of paired devices
     public final UUID PORT_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb"); // Serial Port Service ID
     
@@ -57,8 +60,12 @@ public class MainActivity extends AppCompatActivity {
                         Intent enableAdapter = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                         startActivityForResult(enableAdapter, REQUEST_ENABLE_BT);
                     } else {
-                        BluetoothDevice device = getDevice(DEVICE_ADDRESS);
-                        connectToDevice(device);
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        DeviceDialogFragment dialogFragment = new DeviceDialogFragment();
+                        dialogFragment.show(fragmentManager, DIALOG_DEVICE);
+                        
+//                        BluetoothDevice device = getDevice(DEVICE_ADDRESS);
+//                        connectToDevice(device);
                     }
                 }
             }
@@ -169,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    void beginListenForData() {
+    private void beginListenForData() {
         final Handler handler = new Handler();
         mStopThread = false;
         Thread thread  = new Thread(new Runnable() {
@@ -198,12 +205,20 @@ public class MainActivity extends AppCompatActivity {
 
         thread.start();
     }
+    
+    public void onListItemClick(DialogFragment dialog) {
+        
+    }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_ENABLE_BT) {
             if (resultCode == RESULT_OK) {
-                BluetoothDevice device = getDevice(DEVICE_ADDRESS);
-                connectToDevice(device);
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                DeviceDialogFragment dialogFragment = new DeviceDialogFragment();
+                dialogFragment.show(fragmentManager, DIALOG_DEVICE);
+                
+//                BluetoothDevice device = getDevice(DEVICE_ADDRESS);
+//                connectToDevice(device);
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(getApplicationContext(), "Bluetooth needs to be activated for the app to work!", Toast.LENGTH_SHORT).show();
             } else {
