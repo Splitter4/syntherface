@@ -5,4 +5,5 @@
     <string name="send_button">Send</string>
     <string name="clear_button">Clear</string>
     <string name="input_text_hint">Text to send to Arduino</string>
+    <string name="device_dialog_title">Connect to a device</string>
 </resources>
