@@ -17,7 +17,6 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Set;
 import java.util.UUID;
 
 public class MainActivity extends FragmentActivity implements DeviceDialogFragment.DeviceDialogListener {
@@ -132,29 +131,6 @@ public class MainActivity extends FragmentActivity implements DeviceDialogFragme
         mInputText.setEnabled(status);
         mConsoleTextView.setEnabled(status);
     }
-
-    private BluetoothDevice getDevice(String deviceAddress) {
-        BluetoothDevice device = null;
-        
-        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-        if (pairedDevices.isEmpty()) {
-            Toast.makeText(getApplicationContext(), "Please pair with the Bluetooth device.", Toast.LENGTH_SHORT).show();
-        } else {
-            for (BluetoothDevice bondedDevice : pairedDevices) {
-                // Found device by address
-                if (bondedDevice.getAddress().equals(deviceAddress)) {
-                    mConsoleTextView.append("Found device:\n");
-                    mConsoleTextView.append(bondedDevice.getName() + "\n");
-                    mConsoleTextView.append(bondedDevice.getAddress() + "\n\n");
-                    
-                    device = bondedDevice;
-                    break;
-                }
-            }
-        }
-
-        return device;
-    }
     
     private void connectToDevice(BluetoothDevice device) {
         if(device != null) {
@@ -205,8 +181,8 @@ public class MainActivity extends FragmentActivity implements DeviceDialogFragme
         thread.start();
     }
     
-    public void onListItemClick(String s) {
-        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+    public void onDeviceChosen(BluetoothDevice device) {
+        Toast.makeText(getApplicationContext(), device.getName(), Toast.LENGTH_SHORT).show();
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
