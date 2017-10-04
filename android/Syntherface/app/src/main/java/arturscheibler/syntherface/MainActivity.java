@@ -4,10 +4,9 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
-import android.os.Handler;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.widget.Button;
@@ -206,8 +205,8 @@ public class MainActivity extends FragmentActivity implements DeviceDialogFragme
         thread.start();
     }
     
-    public void onListItemClick(DialogFragment dialog) {
-        
+    public void onListItemClick(String s) {
+        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
