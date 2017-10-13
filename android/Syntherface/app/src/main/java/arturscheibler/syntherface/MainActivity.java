@@ -33,9 +33,7 @@ public class MainActivity extends FragmentActivity implements
         DeviceDialogFragment.DeviceDialogListener,
         ActivityCompat.OnRequestPermissionsResultCallback {
 
-    private final static int REQUEST_ACCESS_COARSE_LOCATION = 1;
     private final static int REQUEST_ENABLE_BT = 1;
-    private final static String DIALOG_DEVICE = "device";
     private final String DEVICE_ADDRESS = "98:D3:36:80:F6:8D"; // TODO: Get address from list of paired devices
     private final UUID PORT_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb"); // Serial Port Service ID
     
@@ -67,7 +65,7 @@ public class MainActivity extends FragmentActivity implements
                     Toast.makeText(getApplicationContext(), "This device doesn't support Bluetooth.", Toast.LENGTH_SHORT).show();
                 } else {
                     if (mBluetoothAdapter.isEnabled()) {
-                        getDevice();
+                        DeviceDialogFragment.setupPermissions(MainActivity.this);
                     } else {
                         Intent enableAdapter = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                         startActivityForResult(enableAdapter, REQUEST_ENABLE_BT);
@@ -138,45 +136,6 @@ public class MainActivity extends FragmentActivity implements
         mInputText.setEnabled(status);
         mConsoleTextView.setEnabled(status);
     }
-    
-    // TODO: Consider statically moving this to DeviceDialogFragment and creating a new interface method to signal when to show the dialog.
-    private void getDevice() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { // Only ask for these permissions on runtime when running Android 6.0 or higher
-            final int permissionStatus = ContextCompat.checkSelfPermission(
-                    getBaseContext(),
-                    Manifest.permission.ACCESS_COARSE_LOCATION);
-            
-            if (permissionStatus == PackageManager.PERMISSION_GRANTED) {
-                showDeviceDialog();
-            } else {
-                ((TextView) new AlertDialog.Builder(this)
-                    .setTitle("Additional permissions needed")
-                    // TODO: Use a non-deprecated method.
-                    .setMessage(Html.fromHtml("<p>To find nearby Bluetooth devices please click \"Allow\" on the next permissions dialog.</p>" +
-                            "<p>For more info see <a href=\"http://developer.android.com/about/versions/marshmallow/android-6.0-changes.html#behavior-hardware-id\">here</a>.</p>"))
-                    .setNeutralButton("Okay", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            ActivityCompat.requestPermissions(
-                                    MainActivity.this,
-                                    new String[] {Manifest.permission.ACCESS_COARSE_LOCATION},
-                                    REQUEST_ACCESS_COARSE_LOCATION);
-                        }
-                    })
-                    .show()
-                    .findViewById(android.R.id.message))
-                    .setMovementMethod(LinkMovementMethod.getInstance()); // Make the link clickable. Needs to be called after show(), in order to generate hyperlinks
-            }
-        } else {
-            showDeviceDialog();
-        }
-    }
-    
-    private void showDeviceDialog() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        DeviceDialogFragment dialogFragment = new DeviceDialogFragment();
-        dialogFragment.show(fragmentManager, DIALOG_DEVICE);
-    }
 
     private void beginListenForData() {
         final Handler handler = new Handler();
@@ -227,19 +186,19 @@ public class MainActivity extends FragmentActivity implements
     
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_ACCESS_COARSE_LOCATION) {
+        if (requestCode == DeviceDialogFragment.REQUEST_ACCESS_COARSE_LOCATION) {
             if (grantResults.length == 0 || grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 Toast.makeText(getApplicationContext(), "Only paired devices will be shown.", Toast.LENGTH_LONG).show();
             }
-            
-            showDeviceDialog();
+    
+            new DeviceDialogFragment().show();
         }
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_ENABLE_BT) {
             if (resultCode == RESULT_OK) {
-                getDevice();
+                DeviceDialogFragment.setupPermissions(this);
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(getApplicationContext(), "Bluetooth needs to be activated for the app to work!", Toast.LENGTH_SHORT).show();
             } else {
