@@ -17,8 +17,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -26,7 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,14 +36,9 @@ public class DeviceDialogFragment extends DialogFragment {
         void onDeviceChosen(BluetoothDevice device);
     }
     
-    private final static String DIALOG_DEVICE = "device";
     public final static int REQUEST_ACCESS_COARSE_LOCATION = 1;
     private DeviceDialogListener mListener; // Use this instance of the interface to deliver action events
     private DeviceAdapter mAdapter;
-    
-    public void show() {
-        super.show(getActivity().getSupportFragmentManager(), DIALOG_DEVICE);
-    }
     
     @Override @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -85,7 +77,8 @@ public class DeviceDialogFragment extends DialogFragment {
                 .create();
     }
     
-    // On the activity using this fragment, this method must be called before 
+    // On the activity using this fragment, this method must be called before showing the fragment.
+    // onRequestPermissionsResult must be overridden in the activity so as to know when to show.
     public static void setupPermissions(final Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { // Only ask for these permissions on runtime when running Android 6.0 or higher
             final int permissionStatus = ContextCompat.checkSelfPermission(
