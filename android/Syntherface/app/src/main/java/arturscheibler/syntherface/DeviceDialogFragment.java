@@ -71,6 +71,7 @@ public class DeviceDialogFragment extends DialogFragment {
                 .setAdapter(mAdapter, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        bluetoothAdapter.cancelDiscovery();
                         mListener.onDeviceChosen(mAdapter.getItem(which));
                     }
                 })

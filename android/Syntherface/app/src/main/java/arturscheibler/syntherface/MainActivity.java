@@ -3,10 +3,15 @@ package arturscheibler.syntherface;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.ParcelUuid;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -27,8 +32,8 @@ public class MainActivity extends FragmentActivity implements
 
     private final static int REQUEST_ENABLE_BT = 1;
     private final static String DIALOG_DEVICE = "device";
-    private final String DEVICE_ADDRESS = "98:D3:36:80:F6:8D"; // TODO: Get address from list of paired devices
-    private final UUID PORT_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb"); // Serial Port Service ID
+    
+    private UUIDBroadcastReceiver mUuidBroadcastReceiver = new UUIDBroadcastReceiver();
     
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothSocket mSocket;
@@ -96,7 +101,7 @@ public class MainActivity extends FragmentActivity implements
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                mConsoleTextView.append("Sent Data:" + string);
+                mConsoleTextView.append("Sent Data: " + string);
             }
         });
 
@@ -133,6 +138,7 @@ public class MainActivity extends FragmentActivity implements
     private void beginListenForData() {
         final Handler handler = new Handler();
         mStopThread = false;
+        
         Thread thread  = new Thread(new Runnable() {
             public void run() {
                 while(!Thread.currentThread().isInterrupted() && !mStopThread) {
@@ -149,8 +155,7 @@ public class MainActivity extends FragmentActivity implements
                             });
                         }
                     }
-                    catch (IOException ex)
-                    {
+                    catch (IOException ex) {
                         mStopThread = true;
                     }
                 }
@@ -160,9 +165,10 @@ public class MainActivity extends FragmentActivity implements
         thread.start();
     }
     
-    public void onDeviceChosen(BluetoothDevice device) {
+    private void connectToDevice(BluetoothDevice device, UUID uuid) {
+        this.unregisterReceiver(mUuidBroadcastReceiver);
         try {
-            mSocket = device.createRfcommSocketToServiceRecord(PORT_UUID);
+            mSocket = device.createRfcommSocketToServiceRecord(uuid);
             mSocket.connect();
         
             mOutputStream = mSocket.getOutputStream();
@@ -177,6 +183,12 @@ public class MainActivity extends FragmentActivity implements
         }
     }
     
+    public void onDeviceChosen(BluetoothDevice device) {
+        IntentFilter intentFilter = new IntentFilter(BluetoothDevice.ACTION_UUID);
+        this.registerReceiver(mUuidBroadcastReceiver, intentFilter);
+        device.fetchUuidsWithSdp();
+    }
+    
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == DeviceDialogFragment.REQUEST_ACCESS_COARSE_LOCATION) {
@@ -189,14 +201,36 @@ public class MainActivity extends FragmentActivity implements
         }
     }
 
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_ENABLE_BT) {
-            if (resultCode == RESULT_OK) {
-                DeviceDialogFragment.setupPermissions(this);
-            } else if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(getApplicationContext(), "Bluetooth needs to be activated for the app to work!", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getApplicationContext(), "Unrecognized result when trying to enable Bluetooth.", Toast.LENGTH_SHORT).show();
+        switch (requestCode) {
+            
+            case REQUEST_ENABLE_BT:
+                switch (resultCode) {
+                    
+                    case RESULT_OK:
+                        DeviceDialogFragment.setupPermissions(this);
+                        break;
+                    
+                    case RESULT_CANCELED:
+                        Toast.makeText(getApplicationContext(), "Bluetooth needs to be activated for the app to work!", Toast.LENGTH_SHORT).show();
+                        break;
+                    
+                    default:
+                        Toast.makeText(getApplicationContext(), "Unrecognized result when trying to enable Bluetooth.", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+                break;
+        }
+    }
+    
+    private class UUIDBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(BluetoothDevice.ACTION_UUID)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                Parcelable[] uuids = intent.getParcelableArrayExtra(BluetoothDevice.EXTRA_UUID);
+                connectToDevice(device, ((ParcelUuid) uuids[0]).getUuid());
             }
         }
     }
