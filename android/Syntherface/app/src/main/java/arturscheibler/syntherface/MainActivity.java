@@ -64,9 +64,11 @@ public class MainActivity extends FragmentActivity implements
                 } else {
                     if (mBluetoothAdapter.isEnabled()) {
                         DeviceDialogFragment.setupPermissions(MainActivity.this);
+                        // The result of this is captured in onRequestPermissionsResult()
                     } else {
                         Intent enableAdapter = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                         startActivityForResult(enableAdapter, REQUEST_ENABLE_BT);
+                        // The result of this is captured in onActivityResult()
                     }
                 }
             }
@@ -212,6 +214,7 @@ public class MainActivity extends FragmentActivity implements
                     
                     case RESULT_OK:
                         DeviceDialogFragment.setupPermissions(this);
+                        // The result of this is captured in onRequestPermissionsResult()
                         break;
                     
                     case RESULT_CANCELED:
