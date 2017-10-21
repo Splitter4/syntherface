@@ -166,6 +166,8 @@ public class MainActivity extends FragmentActivity implements
     }
     
     private void connectToDevice(BluetoothDevice device, UUID uuid) {
+        //TODO: When connecting, "Connection opened" is shown twice and "Error connecting to device", once.
+        //TODO: App crashes when connecting to unavailable device.
         this.unregisterReceiver(mUuidBroadcastReceiver);
         try {
             mSocket = device.createRfcommSocketToServiceRecord(uuid);
