@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Syntherface</string>
+    <string name="synth_widget_icon_default_description">Synth widget</string>
 </resources>

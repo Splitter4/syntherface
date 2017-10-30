@@ -2,6 +2,7 @@ package arturscheibler.syntherface;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.GridLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -14,16 +15,14 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     
-        ArrayList<String> strings = new ArrayList<>();
-        strings.add("a");
-        strings.add("b");
-        strings.add("c");
-        strings.add("d");
-        strings.add("e");
+        GridLayout workspace = findViewById(R.id.workspace_gl);
+        workspace.setOnDragListener(new WorkspaceDragListener());
+    
+        ArrayList<SynthWidget> synthWidgets = new ArrayList<>();
+        synthWidgets.add(new Knob());
         
-        RecyclerView componentList = (RecyclerView) findViewById(R.id.component_list_rv);
-        componentList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        componentList.setAdapter(new ComponentAdapter(strings));
-        
+        RecyclerView synthWidgetList = findViewById(R.id.synth_widget_list_rv);
+        synthWidgetList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        synthWidgetList.setAdapter(new SynthWidgetAdapter(synthWidgets));
     }
 }
