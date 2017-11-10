@@ -9,19 +9,19 @@ import android.widget.RelativeLayout;
 import java.util.ArrayList;
 
 public class MainActivity extends FragmentActivity {
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    
-        RelativeLayout workspace = findViewById(R.id.workspace_rl);
+
+        RelativeLayout workspace = (RelativeLayout) findViewById(R.id.workspace_rl);
         workspace.setOnDragListener(new WorkspaceDragListener());
-    
+
         ArrayList<SynthWidget> synthWidgets = new ArrayList<>();
         synthWidgets.add(new Knob());
-        
-        RecyclerView synthWidgetList = findViewById(R.id.synth_widget_list_rv);
+
+        RecyclerView synthWidgetList = (RecyclerView) findViewById(R.id.synth_widget_list_rv);
         synthWidgetList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         synthWidgetList.setAdapter(new SynthWidgetAdapter(synthWidgets));
     }
