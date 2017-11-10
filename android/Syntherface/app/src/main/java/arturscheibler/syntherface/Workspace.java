@@ -3,16 +3,25 @@ package arturscheibler.syntherface;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
 
 class Workspace {
 
     private static final String TAG = "Workspace";
-    private static final int COLUMNS = 12;
-    private static final int ROWS = 20;
+    private static int COLUMNS;
+    private static int ROWS;
 
     Workspace(final RelativeLayout workspace) {
         workspace.setOnDragListener(new WorkspaceDragListener());
+        workspace.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                float synthWidgetTargetSize = workspace.getContext()
+                        .getResources().getDimension(R.dimen.synth_widget_target_size);
+                COLUMNS = Math.round(workspace.getWidth()/synthWidgetTargetSize);
+            }
+        });
     }
 
     private class WorkspaceDragListener implements View.OnDragListener {
