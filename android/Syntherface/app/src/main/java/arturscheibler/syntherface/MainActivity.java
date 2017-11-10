@@ -15,8 +15,7 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        RelativeLayout workspace = (RelativeLayout) findViewById(R.id.workspace);
-        workspace.setOnDragListener(new WorkspaceDragListener());
+        new Workspace((RelativeLayout) findViewById(R.id.workspace));
 
         ArrayList<SynthWidget> synthWidgets = new ArrayList<>();
         synthWidgets.add(new Knob());
