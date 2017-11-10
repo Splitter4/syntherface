@@ -1,79 +1,76 @@
 package arturscheibler.syntherface;
 
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
-import android.widget.GridLayout;
-import android.widget.Toast;
+import android.widget.RelativeLayout;
 
 class WorkspaceDragListener implements View.OnDragListener {
     
     private static final String TAG = "WorkspaceDragListener";
+    private static final int COLUMNS = 12;
+    private static final int ROWS = 20;
     
     public boolean onDrag(View view, DragEvent event) {
-    
-        GridLayout workspace = (GridLayout) view;
+        RelativeLayout workspace = (RelativeLayout) view;
+        SynthWidget synthWidget = (SynthWidget) event.getLocalState();
         
         switch(event.getAction()) {
             
             case DragEvent.ACTION_DRAG_STARTED:
                 // Ignore the event.
-                return true;
+                break;
             
             case DragEvent.ACTION_DRAG_ENTERED:
-                
-                workspace.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_ATOP);
-                
-                // Invalidate the view to force a redraw in the new tint.
-                workspace.invalidate();
-                
-                return true;
+                synthWidget.inflateFrom(workspace);
+                workspace.addView(synthWidget.getView(), synthWidget.getViewLayoutParams());
+                break;
             
             case DragEvent.ACTION_DRAG_LOCATION:
-                // Ignore the event.
-                return true;
+                double columnWidth = (double) workspace.getWidth()/ COLUMNS;
+                double rowHeight = (double) workspace.getHeight()/ ROWS;
+
+                int shadowSize = synthWidget.getShadowSize();
+                
+                int columnIndex = (int) Math.floor((event.getX() - shadowSize/2.0)/columnWidth);
+                int rowIndex = (int) Math.floor((event.getY() - shadowSize/2.0)/rowHeight);
+                
+                int x = (int) (columnIndex*columnWidth);
+                int y = (int) (rowIndex*rowHeight);
+                
+                synthWidget.setPosition(x, y);
+                
+                Log.d(TAG, "x: " + (event.getX() - shadowSize/2) + " y: " + (event.getY() - shadowSize/2));
+                break;
             
             case DragEvent.ACTION_DRAG_EXITED:
-                
-                workspace.getBackground().setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_ATOP);
-                
-                // Invalidate the view to force a redraw in the new tint.
-                workspace.invalidate();
-                
-                return true;
+                workspace.removeView(synthWidget.getView());
+                break;
             
             case DragEvent.ACTION_DROP:
-                
-                SynthWidget synthWidget = (SynthWidget) event.getLocalState();
-                synthWidget.inflateAndAttachTo(workspace);
-                
-                workspace.getBackground().clearColorFilter();
-                
-                // Invalidates the view to force a redraw.
-                workspace.invalidate();
-                
-                return true;
+//                LayoutInflater inflater = LayoutInflater.from(workspace.getContext());
+//                View synthWidgetView = inflater.inflate(R.layout.knob, workspace, false);
+//                
+//                RelativeLayout.LayoutParams params =
+//                        (RelativeLayout.LayoutParams) synthWidgetView.getLayoutParams();
+//                params.leftMargin = Math.round(event.getX());
+//                params.topMargin = Math.round(event.getY());
+//                
+//                workspace.addView(synthWidgetView, params);
+                break;
             
             case DragEvent.ACTION_DRAG_ENDED:
-                
-                workspace.getBackground().clearColorFilter();
-                
-                // Invalidates the view to force a redraw.
-                workspace.invalidate();
-                
-                if (event.getResult()) {
-                    Toast.makeText(workspace.getContext(), "The drop was handled.", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(workspace.getContext(), "The drop didn't work.", Toast.LENGTH_LONG).show();
+                if (!event.getResult()) {
+                    // Drop did not happen on workspace.
+                    synthWidget.deflate();
                 }
-                
-                return true;
+                break;
             
             default:
-                Log.e(TAG,"Unknown action type received by OnDragListener.");
-                return false;
+                Log.e(TAG,"Unknown action received by OnDragListener: " + event.getAction());
+                break;
         }
+        
+        return true;
     }
 }

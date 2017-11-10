@@ -2,9 +2,9 @@ package arturscheibler.syntherface;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.widget.GridLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 
@@ -15,7 +15,7 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     
-        GridLayout workspace = findViewById(R.id.workspace_gl);
+        RelativeLayout workspace = findViewById(R.id.workspace_rl);
         workspace.setOnDragListener(new WorkspaceDragListener());
     
         ArrayList<SynthWidget> synthWidgets = new ArrayList<>();

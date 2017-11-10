@@ -11,11 +11,15 @@ import java.util.ArrayList;
 
 class SynthWidgetViewHolder extends RecyclerView.ViewHolder {
     
-    ImageView mImageView = null;
-    
-    SynthWidgetViewHolder(View synthWidgetView) {
-        super(synthWidgetView);
-        mImageView = (ImageView) synthWidgetView;
+    private ImageView mIcon = null;
+
+    ImageView getIcon() {
+        return mIcon;
+    }
+
+    SynthWidgetViewHolder(View icon) {
+        super(icon);
+        mIcon = (ImageView) icon;
     }
 }
 
@@ -29,22 +33,24 @@ class SynthWidgetAdapter extends RecyclerView.Adapter<SynthWidgetViewHolder> {
     
     public SynthWidgetViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View synthWidgetView = inflater.inflate(R.layout.synth_widget_list_item, parent, false);
-        return new SynthWidgetViewHolder(synthWidgetView);
+        View icon = inflater.inflate(R.layout.synth_widget_list_item, parent, false);
+        return new SynthWidgetViewHolder(icon);
     }
     
     public void onBindViewHolder(final SynthWidgetViewHolder holder, final int position) {
-        holder.mImageView.setImageResource(mSynthWidgets.get(position).getIconResourceId());
-        holder.mImageView.setOnLongClickListener(new View.OnLongClickListener() {
+        ImageView icon = holder.getIcon();
+        icon.setImageResource(mSynthWidgets.get(position).getIconResourceId());
+        icon.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 View.DragShadowBuilder shadow = new View.DragShadowBuilder(view);
                 SynthWidget synthWidget = mSynthWidgets.get(holder.getAdapterPosition());
+                synthWidget.setShadowView(holder.getIcon());
                 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    // startDrag was deprecated on API 24.
                     view.startDragAndDrop(null, shadow, synthWidget, 0);
                 } else {
-                    // startDrag was deprecated on API 24.
                     view.startDrag(null, shadow, synthWidget, 0);
                 }
         
