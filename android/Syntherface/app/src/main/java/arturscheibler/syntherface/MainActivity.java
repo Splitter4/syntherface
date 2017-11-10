@@ -15,13 +15,13 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        RelativeLayout workspace = (RelativeLayout) findViewById(R.id.workspace_rl);
+        RelativeLayout workspace = (RelativeLayout) findViewById(R.id.workspace);
         workspace.setOnDragListener(new WorkspaceDragListener());
 
         ArrayList<SynthWidget> synthWidgets = new ArrayList<>();
         synthWidgets.add(new Knob());
 
-        RecyclerView synthWidgetList = (RecyclerView) findViewById(R.id.synth_widget_list_rv);
+        RecyclerView synthWidgetList = (RecyclerView) findViewById(R.id.synth_widget_list);
         synthWidgetList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         synthWidgetList.setAdapter(new SynthWidgetAdapter(synthWidgets));
     }

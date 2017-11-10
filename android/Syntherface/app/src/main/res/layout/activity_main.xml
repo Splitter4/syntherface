@@ -4,15 +4,15 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
-    
+
     <RelativeLayout
-        android:id="@+id/workspace_rl"
+        android:id="@+id/workspace"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
-    
+
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/synth_widget_list_rv"
+        android:id="@+id/synth_widget_list"
         android:layout_width="match_parent"
         android:layout_height="80dp" />
 </LinearLayout>
