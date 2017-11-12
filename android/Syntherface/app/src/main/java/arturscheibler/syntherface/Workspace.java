@@ -9,8 +9,8 @@ import android.widget.RelativeLayout;
 class Workspace {
 
     private static final String TAG = "Workspace";
-    private static int COLUMNS;
-    private static int ROWS;
+    private int mColumns;
+    private int mRows;
 
     Workspace(final RelativeLayout workspace) {
         workspace.setOnDragListener(new WorkspaceDragListener());
@@ -19,7 +19,8 @@ class Workspace {
             public void onGlobalLayout() {
                 float synthWidgetTargetSize = workspace.getContext()
                         .getResources().getDimension(R.dimen.synth_widget_target_size);
-                COLUMNS = Math.round(workspace.getWidth()/synthWidgetTargetSize);
+                mColumns = Math.round(workspace.getWidth()/synthWidgetTargetSize);
+                mRows = Math.round(workspace.getHeight()/synthWidgetTargetSize);
             }
         });
     }
@@ -44,8 +45,8 @@ class Workspace {
                     break;
 
                 case DragEvent.ACTION_DRAG_LOCATION:
-                    double columnWidth = (double) workspace.getWidth()/ COLUMNS;
-                    double rowHeight = (double) workspace.getHeight()/ ROWS;
+                    double columnWidth = (double) workspace.getWidth()/ mColumns;
+                    double rowHeight = (double) workspace.getHeight()/ mRows;
 
                     int shadowSize = synthWidget.getShadowSize();
 
