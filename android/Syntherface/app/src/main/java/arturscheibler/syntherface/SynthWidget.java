@@ -15,10 +15,6 @@ abstract class SynthWidget {
         mShadow = shadow;
     }
 
-    int getShadowSize() {
-        return mShadow.getWidth();
-    }
-
     View getView() {
         return mView;
     }
