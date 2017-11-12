@@ -17,10 +17,10 @@ class Workspace {
         workspace.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                float synthWidgetTargetSize = workspace.getContext()
-                        .getResources().getDimension(R.dimen.synth_widget_target_size);
                 mColumns = Math.round(workspace.getWidth()/synthWidgetTargetSize);
                 mRows = Math.round(workspace.getHeight()/synthWidgetTargetSize);
+                float gridCellTargetSize = workspace.getContext()
+                        .getResources().getDimension(R.dimen.cell_target_size);
             }
         });
     }
