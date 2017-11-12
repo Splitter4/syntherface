@@ -17,7 +17,6 @@ class Workspace {
         workspace.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                mColumns = Math.round(workspace.getWidth()/synthWidgetTargetSize);
                 mRows = Math.round(workspace.getHeight()/synthWidgetTargetSize);
                 float gridCellTargetSize = workspace.getContext()
                         .getResources().getDimension(R.dimen.cell_target_size);
