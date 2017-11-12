@@ -21,6 +21,7 @@ class Workspace {
                 mRows = Math.round(workspace.getHeight()/synthWidgetTargetSize);
                 float gridCellTargetSize = workspace.getContext()
                         .getResources().getDimension(R.dimen.cell_target_size);
+                mColumns = Math.round(workspace.getWidth()/gridCellTargetSize);
             }
         });
     }
