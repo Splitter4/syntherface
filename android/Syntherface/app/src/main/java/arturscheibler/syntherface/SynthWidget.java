@@ -9,7 +9,7 @@ abstract class SynthWidget {
 
     private View mShadow = null;
     private View mView = null;
-    private RelativeLayout.LayoutParams mViewLayoutParams = null;
+    private RelativeLayout.LayoutParams mLayoutParams = null;
 
     void setShadowView(@NonNull View shadow) {
         mShadow = shadow;
@@ -27,12 +27,12 @@ abstract class SynthWidget {
         mView = view;
     }
     
-    RelativeLayout.LayoutParams getViewLayoutParams() {
-        return mViewLayoutParams;
+    RelativeLayout.LayoutParams getLayoutParams() {
+        return mLayoutParams;
     }
     
     private void setLayoutParams(RelativeLayout.LayoutParams layoutParams) {
-        mViewLayoutParams = layoutParams;
+        mLayoutParams = layoutParams;
         
         View view = getView();
         if (view != null) {
@@ -53,7 +53,7 @@ abstract class SynthWidget {
     }
     
     void setPosition(int x, int y) {
-        RelativeLayout.LayoutParams layoutParams = getViewLayoutParams();
+        RelativeLayout.LayoutParams layoutParams = getLayoutParams();
         layoutParams.leftMargin = x >= 0 ? x : 0;
         layoutParams.topMargin = y >= 0 ? y : 0;
         setLayoutParams(layoutParams);
