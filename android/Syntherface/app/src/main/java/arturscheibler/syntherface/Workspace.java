@@ -9,18 +9,20 @@ import android.widget.RelativeLayout;
 class Workspace {
 
     private static final String TAG = "Workspace";
-    private int mColumns;
-    private int mRows;
+    private int mColumns = 0;
+    private int mRows = 0;
+    private float mCellSize = 0;
 
     Workspace(final RelativeLayout workspace) {
         workspace.setOnDragListener(new WorkspaceDragListener());
         workspace.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                mRows = Math.round(workspace.getHeight()/synthWidgetTargetSize);
                 float gridCellTargetSize = workspace.getContext()
                         .getResources().getDimension(R.dimen.cell_target_size);
                 mColumns = Math.round(workspace.getWidth()/gridCellTargetSize);
+                mCellSize = workspace.getWidth()/mColumns;
+                mRows = (int) Math.ceil((double) workspace.getHeight()/mCellSize);
             }
         });
     }
@@ -45,20 +47,13 @@ class Workspace {
                     break;
 
                 case DragEvent.ACTION_DRAG_LOCATION:
-                    double columnWidth = (double) workspace.getWidth()/ mColumns;
-                    double rowHeight = (double) workspace.getHeight()/ mRows;
+                    int columnIndex = (int) Math.floor(event.getX()/mCellSize);
+                    int rowIndex = (int) Math.floor(event.getY()/mCellSize);
 
-                    int shadowSize = synthWidget.getShadowSize();
-
-                    int columnIndex = (int) Math.floor((event.getX() - shadowSize/2.0)/columnWidth);
-                    int rowIndex = (int) Math.floor((event.getY() - shadowSize/2.0)/rowHeight);
-
-                    int x = (int) (columnIndex*columnWidth);
-                    int y = (int) (rowIndex*rowHeight);
+                    int x = (int) (columnIndex*mCellSize);
+                    int y = (int) (rowIndex*mCellSize);
 
                     synthWidget.setPosition(x, y);
-
-                    Log.d(TAG, "x: " + (event.getX() - shadowSize/2) + " y: " + (event.getY() - shadowSize/2));
                     break;
 
                 case DragEvent.ACTION_DRAG_EXITED:
