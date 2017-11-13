@@ -42,7 +42,7 @@ class Workspace {
                     break;
 
                 case DragEvent.ACTION_DRAG_ENTERED:
-                    synthWidget.inflateFrom(workspace);
+                    synthWidget.inflateFrom(workspace, mCellSize);
                     workspace.addView(synthWidget.getView(), synthWidget.getLayoutParams());
                     break;
 

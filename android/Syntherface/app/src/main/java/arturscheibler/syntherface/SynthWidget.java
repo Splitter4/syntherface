@@ -10,6 +10,8 @@ abstract class SynthWidget {
     private View mShadow = null;
     private View mView = null;
     private RelativeLayout.LayoutParams mLayoutParams = null;
+    private int mColumnSpan = 1;
+    private int mRowSpan = 1;
 
     void setShadowView(@NonNull View shadow) {
         mShadow = shadow;
@@ -35,12 +37,34 @@ abstract class SynthWidget {
             view.setLayoutParams(layoutParams);
         }
     }
-    
-    void inflateFrom(@NonNull RelativeLayout root) {
+
+    private int getColumnSpan() {
+        return mColumnSpan;
+    }
+
+    private void setColumnSpan(int columnSpan) {
+        mColumnSpan = columnSpan;
+    }
+
+    private int getRowSpan() {
+        return mRowSpan;
+    }
+
+    private void setRowSpan(int rowSpan) {
+        mRowSpan = rowSpan;
+    }
+
+    void inflateFrom(@NonNull RelativeLayout root, float cellSize) {
         LayoutInflater inflater = LayoutInflater.from(root.getContext());
+        
         View view = inflater.inflate(getViewResourceId(), root, false);
         setView(view);
-        setLayoutParams((RelativeLayout.LayoutParams) view.getLayoutParams());
+        
+        RelativeLayout.LayoutParams layoutParams =
+                (RelativeLayout.LayoutParams) view.getLayoutParams();
+        layoutParams.width = (int) cellSize*getColumnSpan();
+        layoutParams.height = (int) cellSize*getRowSpan();
+        setLayoutParams(layoutParams);
     }
 
     void deflate() {
