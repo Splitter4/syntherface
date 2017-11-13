@@ -54,6 +54,14 @@ abstract class SynthWidget {
         mRowSpan = rowSpan;
     }
 
+    private static float getCellSize() {
+        return mCellSize;
+    }
+
+    private static void setCellSize(float cellSize) {
+        mCellSize = cellSize;
+    }
+
     void inflateFrom(@NonNull RelativeLayout root, float cellSize) {
         LayoutInflater inflater = LayoutInflater.from(root.getContext());
         
@@ -65,6 +73,8 @@ abstract class SynthWidget {
         layoutParams.width = (int) cellSize*getColumnSpan();
         layoutParams.height = (int) cellSize*getRowSpan();
         setLayoutParams(layoutParams);
+        
+        setCellSize(cellSize);
     }
 
     void deflate() {
@@ -72,7 +82,10 @@ abstract class SynthWidget {
         setLayoutParams(null);
     }
     
-    void setPosition(int x, int y) {
+    void setPosition(int column, int row) {
+        int x = (int) (column*getCellSize());
+        int y = (int) (row*getCellSize());
+        
         RelativeLayout.LayoutParams layoutParams = getLayoutParams();
         layoutParams.leftMargin = x >= 0 ? x : 0;
         layoutParams.topMargin = y >= 0 ? y : 0;

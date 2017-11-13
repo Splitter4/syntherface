@@ -47,13 +47,10 @@ class Workspace {
                     break;
 
                 case DragEvent.ACTION_DRAG_LOCATION:
-                    int columnIndex = (int) Math.floor(event.getX()/mCellSize);
-                    int rowIndex = (int) Math.floor(event.getY()/mCellSize);
+                    int column = (int) Math.floor(event.getX()/mCellSize);
+                    int row = (int) Math.floor(event.getY()/mCellSize);
 
-                    int x = (int) (columnIndex*mCellSize);
-                    int y = (int) (rowIndex*mCellSize);
-
-                    synthWidget.setPosition(x, y);
+                    synthWidget.setPosition(column, row);
                     break;
 
                 case DragEvent.ACTION_DRAG_EXITED:
