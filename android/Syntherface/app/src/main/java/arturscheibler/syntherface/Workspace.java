@@ -2,9 +2,14 @@ package arturscheibler.syntherface;
 
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
+
+import java.util.ArrayList;
+import java.util.List;
 
 class Workspace {
 
@@ -12,6 +17,7 @@ class Workspace {
     private int mColumns = 0;
     private int mRows = 0;
     private float mCellSize = 0;
+    private List<List<Boolean>> mCellIsOccupied = new ArrayList<>();
 
     Workspace(final RelativeLayout workspace) {
         workspace.setOnDragListener(new WorkspaceDragListener());
@@ -26,6 +32,45 @@ class Workspace {
             }
         });
     }
+    
+    private void changeCellVacancy(
+            boolean occupied, int column, int row, int columnSpan, int rowSpan) {
+        while (column + columnSpan > mCellIsOccupied.size()) {
+            mCellIsOccupied.add(new ArrayList<Boolean>());
+        }
+        
+        for (int c = column; c < column + columnSpan; c++) {
+            List<Boolean> rows = mCellIsOccupied.get(c);
+            while (row + rowSpan > rows.size()) {
+                rows.add(false);
+            }
+            
+            for (int r = row; r < row + rowSpan; r++) {
+                rows.set(r, occupied);
+            }
+        }
+    }
+    
+    private boolean canPlaceOn(int column, int row, int columnSpan, int rowSpan) {
+        while (column + columnSpan > mCellIsOccupied.size()) {
+            mCellIsOccupied.add(new ArrayList<Boolean>());
+        }
+        
+        for (int c = column; c < column + columnSpan; c++) {
+            List<Boolean> rows = mCellIsOccupied.get(c);
+            while (row + rowSpan > rows.size()) {
+                rows.add(false);
+            }
+            
+            for (int r = row; r < row + rowSpan; r++) {
+                if (rows.get(r)) {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
 
     private class WorkspaceDragListener implements View.OnDragListener {
 
@@ -39,41 +84,63 @@ class Workspace {
 
                 case DragEvent.ACTION_DRAG_STARTED:
                     // Ignore the event.
-                    break;
+                    return true;
 
                 case DragEvent.ACTION_DRAG_ENTERED:
                     synthWidget.inflateFrom(workspace, mCellSize);
                     workspace.addView(synthWidget.getView(), synthWidget.getLayoutParams());
-                    break;
+                    return true;
 
                 case DragEvent.ACTION_DRAG_LOCATION:
                     int column = (int) Math.floor(event.getX()/mCellSize);
                     int row = (int) Math.floor(event.getY()/mCellSize);
 
                     synthWidget.setPosition(column, row);
-                    break;
+
+                    int columnSpan = synthWidget.getColumnSpan();
+                    int rowSpan = synthWidget.getRowSpan();
+                    boolean canPlace = canPlaceOn(column, row, columnSpan, rowSpan);
+                    
+                    ViewGroup synthWidgetViewGroup = (ViewGroup) synthWidget.getView();
+                    View redOverlay = synthWidgetViewGroup.findViewById(R.id.red_overlay);
+                    
+                    if (!canPlace && redOverlay == null) {
+                        LayoutInflater inflater = LayoutInflater.from(workspace.getContext());
+                        inflater.inflate(R.layout.red_overlay, synthWidgetViewGroup);
+                    } else if (canPlace && redOverlay != null) {
+                        synthWidgetViewGroup.removeView(redOverlay);
+                    }
+                    return true;
 
                 case DragEvent.ACTION_DRAG_EXITED:
                     workspace.removeView(synthWidget.getView());
-                    break;
+                    return true;
 
                 case DragEvent.ACTION_DROP:
-                    // Ignore the event.
-                    break;
+                    column = (int) Math.floor(event.getX()/mCellSize);
+                    row = (int) Math.floor(event.getY()/mCellSize);
+                    columnSpan = synthWidget.getColumnSpan();
+                    rowSpan = synthWidget.getRowSpan();
+                    
+                    if (canPlaceOn(column, row, columnSpan, rowSpan)) {
+                        changeCellVacancy(true, column, row, columnSpan, rowSpan);
+                        return true;
+                    } else {
+                        workspace.removeView(synthWidget.getView());
+                        return false;
+                    }
 
                 case DragEvent.ACTION_DRAG_ENDED:
                     if (!event.getResult()) {
                         // Drop did not happen on workspace.
                         synthWidget.deflate();
                     }
-                    break;
+                    return true;
 
                 default:
                     Log.e(TAG,"Unknown action received by OnDragListener: " + event.getAction());
-                    break;
+                    return true;
             }
-
-            return true;
         }
     }
 }
