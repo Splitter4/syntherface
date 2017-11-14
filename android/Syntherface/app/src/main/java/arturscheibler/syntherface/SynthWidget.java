@@ -10,8 +10,11 @@ abstract class SynthWidget {
     private View mShadow = null;
     private View mView = null;
     private RelativeLayout.LayoutParams mLayoutParams = null;
+    private int mColumn = 0;
+    private int mRow = 0;
     private int mColumnSpan = 1;
     private int mRowSpan = 1;
+    private static float mCellSize = 0;
 
     void setShadowView(@NonNull View shadow) {
         mShadow = shadow;
@@ -38,7 +41,23 @@ abstract class SynthWidget {
         }
     }
 
-    private int getColumnSpan() {
+    private int getColumn() {
+        return mColumn;
+    }
+
+    private void setColumn(int column) {
+        mColumn = column;
+    }
+
+    private int getRow() {
+        return mRow;
+    }
+
+    private void setRow(int row) {
+        mRow = row;
+    }
+
+    int getColumnSpan() {
         return mColumnSpan;
     }
 
@@ -46,7 +65,7 @@ abstract class SynthWidget {
         mColumnSpan = columnSpan;
     }
 
-    private int getRowSpan() {
+    int getRowSpan() {
         return mRowSpan;
     }
 
@@ -83,6 +102,9 @@ abstract class SynthWidget {
     }
     
     void setPosition(int column, int row) {
+        setColumn(column);
+        setRow(row);
+        
         int x = (int) (column*getCellSize());
         int y = (int) (row*getCellSize());
         
