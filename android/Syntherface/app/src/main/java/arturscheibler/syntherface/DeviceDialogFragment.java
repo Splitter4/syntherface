@@ -29,9 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DeviceDialogFragment extends DialogFragment {
-    /* The activity that creates an instance of this dialog fragment must
-     * implement this interface in order to receive event callbacks.
-     * Each method passes the DialogFragment in case the host needs to query it. */
+    
     interface DeviceDialogListener {
         void onDeviceChosen(BluetoothDevice device);
     }
@@ -118,19 +116,15 @@ public class DeviceDialogFragment extends DialogFragment {
                 REQUEST_ACCESS_COARSE_LOCATION);
     }
     
-    // Override the Fragment.onAttach() method to instantiate the DeviceDialogListener
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         
         if (context instanceof Activity) {
             Activity activity = (Activity) context;
-            // Verify that the host activity implements the callback interface
             try {
-                // Instantiate the DeviceDialogListener so we can send events to the host
                 mListener = (DeviceDialogListener) activity;
             } catch (ClassCastException e) {
-                // The activity doesn't implement the interface, throw exception
                 throw new ClassCastException(activity.toString() + " must implement DeviceDialogListener");
             }
         }
