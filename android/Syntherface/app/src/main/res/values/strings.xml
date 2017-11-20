@@ -10,4 +10,32 @@
     <string name="device_dialog_title">
         Connect to a device
     </string>
+    
+    <string name="bluetooth_not_supported">
+        This device doesn\'t support Bluetooth.
+    </string>
+    
+    <string name="bluetooth_must_be_active">
+        Bluetooth needs to be activated for the app to work!
+    </string>
+    
+    <string name="bluetooth_connection_error">
+        Could not connect to device.
+    </string>
+
+    <string name="bluetooth_disconnection_error">
+        Could not disconnect from device.
+    </string>
+    
+    <string name="only_paired_devices">
+        Only paired devices will be shown.
+    </string>
+    
+    <string name="permission_reasoning">
+        <p>To find unpaired nearby Bluetooth devices please click "Allow" on the 
+        next permissions dialog.</p>
+        <p>For more info see <a href="http://developer.android.com/about/versions/marshmallow/
+        android-6.0-changes.html#behavior-hardware-id">here</a>.</p>
+    </string>
+    
 </resources>
