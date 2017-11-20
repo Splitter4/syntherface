@@ -1,5 +1,13 @@
 <resources>
-    <string name="app_name">Syntherface</string>
-    <string name="synth_widget_icon_default_description">Synth widget</string>
-    <string name="device_dialog_title">Connect to a device</string>
+    <string name="app_name">
+        Syntherface
+    </string>
+    
+    <string name="synth_widget_icon_default_description">
+        Synth widget
+    </string>
+    
+    <string name="device_dialog_title">
+        Connect to a device
+    </string>
 </resources>
