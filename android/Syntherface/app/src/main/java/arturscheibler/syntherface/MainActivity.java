@@ -134,6 +134,8 @@ public class MainActivity extends FragmentActivity implements
             // Receiver not registered. No need to unregister it.
         }
         
+        mBluetoothAdapter.cancelDiscovery();
+        
         try {
             mSocket = mDevice.createRfcommSocketToServiceRecord(mUuid);
         } catch (IOException e) {
