@@ -11,6 +11,10 @@
         Connect to a device
     </string>
     
+    <string name="default_device_name">
+        Unnamed device
+    </string>
+    
     <string name="bluetooth_not_supported">
         This device doesn\'t support Bluetooth.
     </string>

@@ -113,6 +113,7 @@ public class DeviceDialogFragment extends DialogFragment {
                 TextView textView = dialog.findViewById(android.R.id.message);
                 if (textView != null) {
                     // Make the link clickable. Needs to be called after show().
+                    // TODO: Link is not clickable even after this.
                     textView.setMovementMethod(LinkMovementMethod.getInstance());
                 }
             }
@@ -163,8 +164,16 @@ public class DeviceDialogFragment extends DialogFragment {
                 convertView = mActivity.getLayoutInflater()
                         .inflate(android.R.layout.simple_list_item_1, null);
             }
+
+            BluetoothDevice device = getItem(position);
+            String deviceName;
+            if (device != null && device.getName() != null) {
+                deviceName = device.getName();
+            } else {
+                deviceName = getString(R.string.default_device_name);
+            }
             
-            ((TextView) convertView).setText(getItem(position).getName());
+            ((TextView) convertView).setText(deviceName);
             
             return convertView;
         }
