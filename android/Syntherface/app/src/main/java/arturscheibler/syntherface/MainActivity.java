@@ -7,11 +7,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.ParcelUuid;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -47,15 +45,22 @@ public class MainActivity extends FragmentActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ////////// Setup UI //////////
+        
         new Workspace((RelativeLayout) findViewById(R.id.workspace));
 
         ArrayList<SynthWidget> synthWidgets = new ArrayList<>();
         synthWidgets.add(new Knob());
 
         RecyclerView synthWidgetList = findViewById(R.id.synth_widget_list);
-        synthWidgetList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        synthWidgetList.setLayoutManager(new LinearLayoutManager(
+                this,
+                LinearLayoutManager.HORIZONTAL,
+                false));
         synthWidgetList.setAdapter(new SynthWidgetAdapter(synthWidgets));
     
+        //////////// Setup Bluetooth connection to device //////////
+        
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
             Toast.makeText(
@@ -65,12 +70,10 @@ public class MainActivity extends FragmentActivity implements
                     .show();
         } else {
             if (mBluetoothAdapter.isEnabled()) {
-                DeviceDialogFragment.setupPermissions(MainActivity.this);
-                // The result of this is captured in onRequestPermissionsResult()
+                mDeviceDialogFragment.show(getSupportFragmentManager(), DIALOG_DEVICE);
             } else {
                 Intent enableAdapter = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableAdapter, REQUEST_ENABLE_BT);
-                // The result of this is captured in onActivityResult()
             }
         }
 
@@ -188,21 +191,6 @@ public class MainActivity extends FragmentActivity implements
         registerReceiver(mUuidBroadcastReceiver, intentFilter);
         device.fetchUuidsWithSdp();
     }
-    
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == DeviceDialogFragment.REQUEST_ACCESS_COARSE_LOCATION) {
-            if (grantResults.length == 0 || grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                Toast.makeText(
-                        getApplicationContext(),
-                        getString(R.string.only_paired_devices),
-                        Toast.LENGTH_LONG)
-                        .show();
-            }
-            
-            mDeviceDialogFragment.show(getSupportFragmentManager(), DIALOG_DEVICE);
-        }
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -210,8 +198,7 @@ public class MainActivity extends FragmentActivity implements
             case REQUEST_ENABLE_BT:
                 switch (resultCode) {
                     case RESULT_OK:
-                        DeviceDialogFragment.setupPermissions(this);
-                        // The result of this is captured in onRequestPermissionsResult()
+                        mDeviceDialogFragment.show(getSupportFragmentManager(), DIALOG_DEVICE);
                         break;
                     
                     case RESULT_CANCELED:
