@@ -39,11 +39,8 @@
         Only paired devices will be shown.
     </string>
     
-    <string name="permission_reasoning">
-        <p>To find unpaired nearby Bluetooth devices please click "Allow" on the 
-        next permissions dialog.</p>
-        <p>For more info see <a href="http://developer.android.com/about/versions/marshmallow/
-        android-6.0-changes.html#behavior-hardware-id">here</a>.</p>
+    <string name="permission_rationale">
+        To find nearby unpaired Bluetooth devices, &app_name; needs access to your device location.
     </string>
     
 </resources>
