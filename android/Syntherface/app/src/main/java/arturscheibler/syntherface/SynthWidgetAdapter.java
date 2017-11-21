@@ -33,7 +33,7 @@ class SynthWidgetAdapter extends RecyclerView.Adapter<SynthWidgetViewHolder> {
     
     public SynthWidgetViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View icon = inflater.inflate(R.layout.synth_widget_list_item, parent, false);
+        View icon = inflater.inflate(R.layout.item_synth_widget, parent, false);
         return new SynthWidgetViewHolder(icon);
     }
     
