@@ -1,6 +1,10 @@
+<!DOCTYPE resources [
+    <!ENTITY app_name "Syntherface">
+]>
+
 <resources>
     <string name="app_name">
-        Syntherface
+        &app_name;
     </string>
     
     <string name="synth_widget_icon_default_description">
