@@ -14,17 +14,14 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.text.Html;
-import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +37,7 @@ public class DeviceDialogFragment extends DialogFragment {
     private Activity mActivity = null;
     private DeviceDialogListener mListener = null;
     private DeviceAdapter mAdapter = null;
-    private final BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    private final static BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private final BroadcastReceiver mDiscoveryReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -56,15 +53,7 @@ public class DeviceDialogFragment extends DialogFragment {
     @Override @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         List<BluetoothDevice> pairedDevices = new ArrayList<>(mBluetoothAdapter.getBondedDevices());
-        
         mAdapter = new DeviceAdapter(pairedDevices);
-    
-        // Register for device discovery broadcasts.        
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-        mActivity.registerReceiver(mDiscoveryReceiver, filter);
-        
-        mBluetoothAdapter.startDiscovery();
         
         return new AlertDialog.Builder(mActivity)
                 .setTitle(R.string.device_dialog_title)
@@ -78,58 +67,6 @@ public class DeviceDialogFragment extends DialogFragment {
                 .create();
     }
     
-    // On the activity using this fragment, this method must be called before showing the fragment.
-    // onRequestPermissionsResult must be overridden in the activity so as to know when to show.
-    public static void setupPermissions(final Activity activity) {
-        // Only ask for these permissions on runtime when running Android 6.0 or higher
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            final int permissionStatus = ContextCompat.checkSelfPermission(
-                    activity.getBaseContext(),
-                    Manifest.permission.ACCESS_COARSE_LOCATION);
-            
-            if (permissionStatus == PackageManager.PERMISSION_GRANTED) {
-                // Request it anyway so that onRequestPermissionsResult will be called in the activity
-                requestPermission(activity);
-            } else {
-                String permissionReasoning = activity.getString(R.string.permission_reasoning);
-                Spanned dialogMessage;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    dialogMessage = Html.fromHtml(permissionReasoning, Html.FROM_HTML_MODE_LEGACY);
-                } else {
-                    dialogMessage = Html.fromHtml(permissionReasoning);
-                }
-                
-                AlertDialog dialog = new AlertDialog.Builder(activity)
-                        .setTitle("Additional permissions needed")
-                        .setNeutralButton("Okay", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                requestPermission(activity);
-                            }
-                        })
-                        .setMessage(dialogMessage)
-                        .show();
-                
-                TextView textView = dialog.findViewById(android.R.id.message);
-                if (textView != null) {
-                    // Make the link clickable. Needs to be called after show().
-                    // TODO: Link is not clickable even after this.
-                    textView.setMovementMethod(LinkMovementMethod.getInstance());
-                }
-            }
-        } else {
-            // Request it anyway so that onRequestPermissionsResult will be called in the activity
-            requestPermission(activity);
-        }
-    }
-    
-    private static void requestPermission(final Activity activity) {
-        ActivityCompat.requestPermissions(
-                activity,
-                new String[] {Manifest.permission.ACCESS_COARSE_LOCATION},
-                REQUEST_ACCESS_COARSE_LOCATION);
-    }
-    
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -137,7 +74,7 @@ public class DeviceDialogFragment extends DialogFragment {
         if (context instanceof Activity) {
             Activity activity = (Activity) context;
             mActivity = activity;
-            
+
             try {
                 mListener = (DeviceDialogListener) activity;
             } catch (ClassCastException e) {
@@ -147,9 +84,79 @@ public class DeviceDialogFragment extends DialogFragment {
     }
     
     @Override
+    public void onStart() {
+        super.onStart();
+
+        // A permission to access the device's coarse location is needed to discover unpaired
+        // devices. These permissions are only necessary for Android 6.0 and higher.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            discoverUnpairedDevices();
+        } else {
+            final int permissionStatus = ContextCompat.checkSelfPermission(
+                    mActivity.getBaseContext(),
+                    Manifest.permission.ACCESS_COARSE_LOCATION);
+
+            if (permissionStatus == PackageManager.PERMISSION_GRANTED) {
+                discoverUnpairedDevices();
+            } else {
+                new AlertDialog.Builder(mActivity)
+                        .setTitle("Additional permissions needed")
+                        .setMessage(mActivity.getString(R.string.permission_rationale))
+                        .setNeutralButton("Okay", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                requestPermissions(
+                                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                                        REQUEST_ACCESS_COARSE_LOCATION);
+                            }
+                        })
+                        .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialogInterface) {
+                                Toast.makeText(
+                                        mActivity,
+                                        getString(R.string.only_paired_devices),
+                                        Toast.LENGTH_LONG)
+                                        .show();
+                            }
+                        })
+                        .show();
+            }
+        }
+    }
+    
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mActivity.unregisterReceiver(mDiscoveryReceiver);
+        try {
+            mActivity.unregisterReceiver(mDiscoveryReceiver);
+        } catch (IllegalArgumentException e) {
+            // Receiver not registered. No need to unregister it.
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {        
+        if (requestCode == DeviceDialogFragment.REQUEST_ACCESS_COARSE_LOCATION) {
+            if (grantResults.length == 0 || grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                Toast.makeText(
+                        mActivity,
+                        getString(R.string.only_paired_devices),
+                        Toast.LENGTH_LONG)
+                        .show();
+            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                discoverUnpairedDevices();
+            }
+        }
+    }
+    
+    private void discoverUnpairedDevices() {
+        // Register for device discovery broadcasts.        
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        mActivity.registerReceiver(mDiscoveryReceiver, filter);
+
+        mBluetoothAdapter.startDiscovery();
     }
     
     private class DeviceAdapter extends ArrayAdapter<BluetoothDevice> {
