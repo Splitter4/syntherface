@@ -43,4 +43,20 @@
         To find nearby unpaired Bluetooth devices, &app_name; needs access to your device location.
     </string>
     
+    <string name="synth_widget_dialog_name_hint">
+        WIDGET_NAME
+    </string>
+
+    <string name="synth_widget_dialog_done">
+        Done
+    </string>
+
+    <string name="synth_widget_dialog_cancel">
+        Cancel
+    </string>
+    
+    <string name="knob_dialog_value_hint">
+        Value
+    </string>
+    
 </resources>
