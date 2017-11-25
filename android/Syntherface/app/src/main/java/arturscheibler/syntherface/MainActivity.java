@@ -30,6 +30,7 @@ public class MainActivity extends FragmentActivity implements
     private final static String TAG = "MainActivity";
     private final static int REQUEST_ENABLE_BT = 1;
     private final static String DIALOG_DEVICE = "device";
+    private static final String DIALOG_SYNTH_WIDGET_SETUP = "synth_widget_setup";
     
     private final UUIDBroadcastReceiver mUuidBroadcastReceiver = new UUIDBroadcastReceiver();
     private final DeviceDialogFragment mDeviceDialogFragment = new DeviceDialogFragment();
@@ -47,7 +48,12 @@ public class MainActivity extends FragmentActivity implements
 
         ////////// Setup UI //////////
         
-        new Workspace((RelativeLayout) findViewById(R.id.workspace));
+        new Workspace((RelativeLayout) findViewById(R.id.workspace), new Workspace.OnDropListener() {
+            @Override
+            public void onDrop(SynthWidget synthWidget) {
+                synthWidget.showSetupDialog(getSupportFragmentManager(), DIALOG_SYNTH_WIDGET_SETUP);
+            }
+        });
 
         ArrayList<SynthWidget> synthWidgets = new ArrayList<>();
         synthWidgets.add(new Knob());
