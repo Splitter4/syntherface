@@ -14,12 +14,19 @@ import java.util.List;
 class Workspace {
 
     private static final String TAG = "Workspace";
+    private OnDropListener mListener = null;
     private int mColumns = 0;
     private int mRows = 0;
     private float mCellSize = 0;
     private List<List<Boolean>> mCellIsOccupied = new ArrayList<>();
+    
+    interface OnDropListener {
+        void onDrop(SynthWidget synthWidget);
+    }
 
-    Workspace(final RelativeLayout workspace) {
+    Workspace(final RelativeLayout workspace, OnDropListener listener) {
+        mListener = listener;
+        
         workspace.setOnDragListener(new WorkspaceDragListener());
         workspace.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -70,6 +77,10 @@ class Workspace {
         }
         
         return true;
+    }
+    
+    private void onDrop(SynthWidget synthWidget) {
+        mListener.onDrop(synthWidget);
     }
 
     private class WorkspaceDragListener implements View.OnDragListener {
@@ -124,6 +135,7 @@ class Workspace {
                     
                     if (canPlaceOn(column, row, columnSpan, rowSpan)) {
                         changeCellVacancy(true, column, row, columnSpan, rowSpan);
+                        onDrop(synthWidget);
                         return true;
                     } else {
                         workspace.removeView(synthWidget.getView());
