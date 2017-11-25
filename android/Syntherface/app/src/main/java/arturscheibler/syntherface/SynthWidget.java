@@ -1,8 +1,12 @@
 package arturscheibler.syntherface;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 abstract class SynthWidget {
@@ -114,8 +118,45 @@ abstract class SynthWidget {
         setLayoutParams(layoutParams);
     }
     
-    abstract int getViewResourceId();
-    
+    void showSetupDialog(FragmentManager manager, String tag) {
+        SynthWidgetDialogFragment dialogFragment = new SynthWidgetDialogFragment();
+        Bundle arguments = new Bundle();
+        arguments.putInt(
+                SynthWidgetDialogFragment.PARAMETERS_LAYOUT_RESOURCE_ID,
+                getDialogLayoutResourceId());
+        dialogFragment.setArguments(arguments);
+        dialogFragment.show(manager, tag);
+    }
+
     abstract int getIconResourceId();
     
+    abstract int getViewResourceId();
+    
+    abstract int getDialogLayoutResourceId();
+
+    public static class SynthWidgetDialogFragment extends DialogFragment {
+
+        public static final String PARAMETERS_LAYOUT_RESOURCE_ID = "PARAMETERS_LAYOUT_RESOURCE_ID";
+
+        @Override
+        public View onCreateView(
+                @NonNull LayoutInflater inflater,
+                ViewGroup container,
+                Bundle savedInstanceState) {
+            View dialogView = inflater.inflate(R.layout.dialog_synth_widget, container);
+            
+            Bundle arguments = getArguments();
+            if (arguments != null) {
+                View synthWidgetParametersView =
+                        inflater.inflate(arguments.getInt(PARAMETERS_LAYOUT_RESOURCE_ID), container);
+                
+                ViewGroup parametersContainerView =
+                        dialogView.findViewById(R.id.synth_widget_parameters);
+                
+                parametersContainerView.addView(synthWidgetParametersView);
+            }
+            
+            return dialogView;
+        }
+    }
 }
