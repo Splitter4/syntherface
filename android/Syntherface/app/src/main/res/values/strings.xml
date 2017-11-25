@@ -1,3 +1,4 @@
+<!--We define the app name like this so it can be used inside other strings here.-->
 <!DOCTYPE resources [
     <!ENTITY app_name "Syntherface">
 ]>
