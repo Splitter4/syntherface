@@ -23,11 +23,11 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class MainActivity extends FragmentActivity implements
+public class WorkspaceActivity extends FragmentActivity implements
         DeviceDialogFragment.DeviceDialogListener,
         ActivityCompat.OnRequestPermissionsResultCallback {
 
-    private final static String TAG = "MainActivity";
+    private final static String TAG = "WorkspaceActivity";
     private final static int REQUEST_ENABLE_BT = 1;
     private final static String DIALOG_DEVICE = "device";
     private static final String DIALOG_SYNTH_WIDGET_SETUP = "synth_widget_setup";
@@ -164,7 +164,7 @@ public class MainActivity extends FragmentActivity implements
                 } catch (IOException connectException) {
                     connectException.printStackTrace();
                     
-                    MainActivity.this.runOnUiThread(new Runnable() {
+                    WorkspaceActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             Toast.makeText(
