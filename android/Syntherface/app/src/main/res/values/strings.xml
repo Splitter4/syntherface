@@ -48,11 +48,11 @@
         WIDGET_NAME
     </string>
 
-    <string name="synth_widget_dialog_done">
+    <string name="synth_widget_dialog_positive_button">
         Done
     </string>
 
-    <string name="synth_widget_dialog_cancel">
+    <string name="synth_widget_dialog_negative_button">
         Cancel
     </string>
     
