@@ -39,9 +39,12 @@ public class SynthWidgetDialogFragment extends DialogFragment {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 // We're overriding this button's behavior later so that it won't
-                                // automatically dismiss the dialog on click.
-                                // However, we still need this because, on older versions of Android, 
-                                // unless we pass a handler, the button doesn't get instantiated.
+                                // automatically dismiss the dialog on click. This way, we can
+                                // validate the data and approve of the dialog's dismissal or not.
+                                
+                                // However, we still need to instantiate this listener here because,
+                                // on older versions of Android, unless we pass a handler, the
+                                // button doesn't get instantiated.
                             }
                         })
                 .setNegativeButton(R.string.synth_widget_dialog_negative_button, null);
