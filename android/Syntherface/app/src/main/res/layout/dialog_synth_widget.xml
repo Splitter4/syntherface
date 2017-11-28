@@ -15,7 +15,7 @@
         android:imeOptions="actionDone" />
     
     <FrameLayout
-        android:id="@+id/synth_widget_parameters"
+        android:id="@+id/synth_widget_parameters_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
