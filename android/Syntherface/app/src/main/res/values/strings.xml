@@ -60,4 +60,16 @@
         Value
     </string>
     
+    <string name="name_required">
+        A name is required.
+    </string>
+    
+    <string name="knob_value_required">
+        A value is required.
+    </string>
+    
+    <string name="knob_value_not_integer">
+        The value must be a valid integer.
+    </string>
+    
 </resources>
