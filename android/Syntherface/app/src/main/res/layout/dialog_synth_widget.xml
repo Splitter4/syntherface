@@ -11,7 +11,8 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="@string/synth_widget_dialog_name_hint"
-        android:inputType="textCapCharacters" />
+        android:inputType="textCapCharacters"
+        android:imeOptions="actionDone" />
     
     <FrameLayout
         android:id="@+id/synth_widget_parameters"
