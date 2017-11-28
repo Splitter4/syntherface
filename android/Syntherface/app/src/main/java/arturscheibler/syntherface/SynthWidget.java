@@ -7,6 +7,7 @@ import android.widget.RelativeLayout;
 
 abstract class SynthWidget {
 
+    private String mName = null;
     private View mShadow = null;
     private View mView = null;
     private RelativeLayout.LayoutParams mLayoutParams = null;
@@ -15,6 +16,14 @@ abstract class SynthWidget {
     private int mColumnSpan = 1;
     private int mRowSpan = 1;
     private static float mCellSize = 0;
+
+    public String getName() {
+        return mName;
+    }
+
+    public void setName(String name) {
+        mName = name;
+    }
 
     void setShadowView(@NonNull View shadow) {
         mShadow = shadow;
