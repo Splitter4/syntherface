@@ -1,5 +1,9 @@
 package arturscheibler.syntherface;
 
+import android.content.Context;
+import android.view.ViewGroup;
+import android.widget.EditText;
+
 class Knob extends SynthWidget {
     
     private int mValue = 0;
@@ -23,7 +27,27 @@ class Knob extends SynthWidget {
     }
 
     @Override
-    int getDialogLayoutResourceId() {
+    int getDialogParametersLayoutResourceId() {
         return R.layout.dialog_knob;
+    }
+    
+    @Override
+    void setParametersFrom(ViewGroup parametersLayout) throws InvalidSynthWidgetParameterException {
+        Context context = parametersLayout.getContext();
+
+        EditText valueView = parametersLayout.findViewById(R.id.value);
+        String textValue = valueView.getText().toString();
+        if (textValue.isEmpty()) {
+            throw new InvalidSynthWidgetParameterException(
+                    context.getString(R.string.knob_value_required));
+        }
+
+        try {
+            setValue(Integer.parseInt(textValue));
+        } catch (NumberFormatException numberFormatException) {
+            throw new InvalidSynthWidgetParameterException(
+                    context.getString(R.string.knob_value_not_integer),
+                    numberFormatException);
+        }
     }
 }
