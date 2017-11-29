@@ -10,25 +10,53 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 public class SynthWidgetDialogFragment extends DialogFragment {
 
     public static final String PARAMETERS_LAYOUT_RESOURCE_ID = "PARAMETERS_LAYOUT_RESOURCE_ID";
+    
+    private SynthWidget mSynthWidget = null;
+    private View mDialogView = null;
+
+    private SynthWidget getSynthWidget() {
+        return mSynthWidget;
+    }
+
+    public void setSynthWidget(SynthWidget synthWidget) {
+        mSynthWidget = synthWidget;
+    }
+
+    private View getDialogView() {
+        return mDialogView;
+    }
+
+    private void setDialogView(View dialogView) {
+        mDialogView = dialogView;
+    }
 
     @Override @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_synth_widget, null);
+        View dialogView = inflater.inflate(
+                R.layout.dialog_synth_widget,
+                null);
+        setDialogView(dialogView);
 
-        Bundle arguments = getArguments();
-        if (arguments != null) {
-            View synthWidgetParametersView =
-                    inflater.inflate(arguments.getInt(PARAMETERS_LAYOUT_RESOURCE_ID), null);
-
-            ViewGroup parametersContainerView =
-                    dialogView.findViewById(R.id.synth_widget_parameters);
-
-            parametersContainerView.addView(synthWidgetParametersView);
+        SynthWidget synthWidget = getSynthWidget();
+        if (synthWidget != null) {
+            int parametersLayoutResourceId = synthWidget.getDialogParametersLayoutResourceId();
+            if (parametersLayoutResourceId != 0) {
+                ViewGroup parametersLayout = (ViewGroup) inflater.inflate(
+                        parametersLayoutResourceId,
+                        null);
+    
+                ViewGroup parametersLayoutContainer =
+                        dialogView.findViewById(R.id.synth_widget_parameters_container);
+    
+                parametersLayoutContainer.addView(parametersLayout);
+            }
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
@@ -64,7 +92,37 @@ public class SynthWidgetDialogFragment extends DialogFragment {
             positiveButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    dialog.dismiss();
+                    View dialogView = getDialogView();
+                    
+                    EditText nameView = dialogView.findViewById(R.id.name);
+                    String name = nameView.getText().toString();
+                    if (name.isEmpty()) {
+                        Toast.makeText(
+                                getActivity(),
+                                getString(R.string.name_required),
+                                Toast.LENGTH_LONG)
+                                .show();
+                    } else {
+                        SynthWidget synthWidget = getSynthWidget();
+                        
+                        ViewGroup parametersLayoutContainer =
+                                dialogView.findViewById(R.id.synth_widget_parameters_container);
+                        ViewGroup parametersLayout =
+                                (ViewGroup) parametersLayoutContainer.getChildAt(0);
+                        if (synthWidget != null && parametersLayout != null) {
+                            try {
+                                synthWidget.setParametersFrom(parametersLayout);
+                                synthWidget.setName(name);
+                                dialog.dismiss();
+                            } catch (SynthWidget.InvalidSynthWidgetParameterException e) {
+                                Toast.makeText(
+                                        getActivity(),
+                                        e.getMessage(),
+                                        Toast.LENGTH_LONG)
+                                        .show();
+                            }
+                        }
+                    }
                 }
             });
         }
