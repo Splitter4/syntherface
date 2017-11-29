@@ -346,14 +346,9 @@ public class WorkspaceActivity extends FragmentActivity implements
 
                     if (canPlaceOn(column, row, columnSpan, rowSpan)) {
                         changeCellVacancy(true, column, row, columnSpan, rowSpan);
-
-                        Bundle arguments = new Bundle();
-                        arguments.putInt(
-                                SynthWidgetDialogFragment.PARAMETERS_LAYOUT_RESOURCE_ID,
-                                synthWidget.getDialogLayoutResourceId());
                         
                         SynthWidgetDialogFragment dialogFragment = new SynthWidgetDialogFragment();
-                        dialogFragment.setArguments(arguments);
+                        dialogFragment.setSynthWidget(synthWidget);
                         dialogFragment.show(
                                 getSupportFragmentManager(),
                                 DIALOG_SYNTH_WIDGET_SETUP);
