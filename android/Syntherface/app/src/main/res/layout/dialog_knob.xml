@@ -10,7 +10,6 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="@string/knob_dialog_value_hint"
-        android:inputType="number"
-        android:imeOptions="actionDone" />
+        android:inputType="number" />
     
 </LinearLayout>
