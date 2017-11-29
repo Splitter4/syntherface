@@ -18,6 +18,7 @@ import android.widget.Toast;
 public class SynthWidgetDialogFragment extends DialogFragment {
 
     public static final String PARAMETERS_LAYOUT_RESOURCE_ID = "PARAMETERS_LAYOUT_RESOURCE_ID";
+    private static final String TAG = "SynthWidgetDialogFragme";
     
     private SynthWidget mSynthWidget = null;
     private View mDialogView = null;
