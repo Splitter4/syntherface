@@ -255,6 +255,16 @@ public class WorkspaceActivity extends FragmentActivity implements
 
         return true;
     }
+    
+    private void removeSynthWidgetFrom(RelativeLayout workspace, SynthWidget synthWidget) {
+        int column = synthWidget.getColumn();
+        int row = synthWidget.getRow();
+        int columnSpan = synthWidget.getColumnSpan();
+        int rowSpan = synthWidget.getRowSpan();
+        
+        changeCellVacancy(false, column, row, columnSpan, rowSpan);
+        workspace.removeView(synthWidget.getView());
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -299,8 +309,8 @@ public class WorkspaceActivity extends FragmentActivity implements
         private static final String TAG = "WorkspaceDragListener";
 
         public boolean onDrag(View view, DragEvent event) {
-            RelativeLayout workspace = (RelativeLayout) view;
-            SynthWidget synthWidget = (SynthWidget) event.getLocalState();
+            final RelativeLayout workspace = (RelativeLayout) view;
+            final SynthWidget synthWidget = (SynthWidget) event.getLocalState();
 
             switch(event.getAction()) {
 
@@ -349,6 +359,13 @@ public class WorkspaceActivity extends FragmentActivity implements
                         
                         SynthWidgetDialogFragment dialogFragment = new SynthWidgetDialogFragment();
                         dialogFragment.setSynthWidget(synthWidget);
+                        dialogFragment.setOnCancelListener(
+                                new SynthWidgetDialogFragment.OnCancelListener() {
+                            @Override
+                            public void onCancel() {
+                                removeSynthWidgetFrom(workspace, synthWidget);
+                            }
+                        });
                         dialogFragment.show(
                                 getSupportFragmentManager(),
                                 DIALOG_SYNTH_WIDGET_SETUP);
