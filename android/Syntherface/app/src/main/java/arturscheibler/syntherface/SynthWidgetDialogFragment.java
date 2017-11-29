@@ -9,8 +9,10 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class SynthWidgetDialogFragment extends DialogFragment {
@@ -51,6 +53,18 @@ public class SynthWidgetDialogFragment extends DialogFragment {
                 ViewGroup parametersLayout = (ViewGroup) inflater.inflate(
                         parametersLayoutResourceId,
                         null);
+                
+                // Make soft keyboard show "Done" button for last input view.
+                int childIndex = parametersLayout.getChildCount() - 1;
+                while (childIndex >= 0) {
+                    View parameterView = parametersLayout.getChildAt(childIndex);
+                    if (parameterView instanceof TextView) {
+                        ((TextView) parameterView).setImeOptions(EditorInfo.IME_ACTION_DONE);
+                        break;
+                    }
+                    
+                    childIndex--;
+                }
     
                 ViewGroup parametersLayoutContainer =
                         dialogView.findViewById(R.id.synth_widget_parameters_container);
