@@ -51,7 +51,7 @@ abstract class SynthWidget {
         }
     }
 
-    private int getColumn() {
+    public int getColumn() {
         return mColumn;
     }
 
@@ -59,7 +59,7 @@ abstract class SynthWidget {
         mColumn = column;
     }
 
-    private int getRow() {
+    public int getRow() {
         return mRow;
     }
 
