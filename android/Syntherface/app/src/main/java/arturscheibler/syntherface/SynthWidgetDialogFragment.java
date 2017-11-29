@@ -16,13 +16,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class SynthWidgetDialogFragment extends DialogFragment {
+    
+    interface OnCancelListener {
+        void onCancel();
+    }
 
     public static final String PARAMETERS_LAYOUT_RESOURCE_ID = "PARAMETERS_LAYOUT_RESOURCE_ID";
     private static final String TAG = "SynthWidgetDialogFragme";
     
     private SynthWidget mSynthWidget = null;
     private View mDialogView = null;
-
+    private OnCancelListener mOnCancelListener = null;
+    
     private SynthWidget getSynthWidget() {
         return mSynthWidget;
     }
@@ -37,6 +42,14 @@ public class SynthWidgetDialogFragment extends DialogFragment {
 
     private void setDialogView(View dialogView) {
         mDialogView = dialogView;
+    }
+
+    private OnCancelListener getOnCancelListener() {
+        return mOnCancelListener;
+    }
+    
+    public void setOnCancelListener(OnCancelListener listener) {
+        mOnCancelListener = listener;
     }
 
     @Override @NonNull
@@ -90,7 +103,12 @@ public class SynthWidgetDialogFragment extends DialogFragment {
                                 // button doesn't get instantiated.
                             }
                         })
-                .setNegativeButton(R.string.synth_widget_dialog_negative_button, null);
+                .setNegativeButton(R.string.synth_widget_dialog_negative_button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
 
         return builder.create();
     }
@@ -145,6 +163,6 @@ public class SynthWidgetDialogFragment extends DialogFragment {
 
     @Override
     public void onCancel(DialogInterface dialog) {
-
+        getOnCancelListener().onCancel();
     }
 }
