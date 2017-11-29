@@ -128,5 +128,22 @@ abstract class SynthWidget {
     abstract int getViewResourceId();
     
     abstract int getDialogLayoutResourceId();
+    class InvalidSynthWidgetParameterException extends Exception {
+        InvalidSynthWidgetParameterException() {
+            super();
+        }
+        
+        InvalidSynthWidgetParameterException(String message) {
+            super(message);
+        }
+        
+        InvalidSynthWidgetParameterException(Throwable cause) {
+            super(cause);
+        }
+        
+        InvalidSynthWidgetParameterException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
 
 }
