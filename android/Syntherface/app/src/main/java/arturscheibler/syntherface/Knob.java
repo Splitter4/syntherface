@@ -2,6 +2,16 @@ package arturscheibler.syntherface;
 
 class Knob extends SynthWidget {
     
+    private int mValue = 0;
+
+    public int getValue() {
+        return mValue;
+    }
+
+    public void setValue(int value) {
+        mValue = value;
+    }
+
     @Override
     int getViewResourceId() {
         return R.layout.knob;
