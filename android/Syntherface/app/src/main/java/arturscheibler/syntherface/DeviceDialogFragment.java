@@ -50,6 +50,22 @@ public class DeviceDialogFragment extends DialogFragment {
         }
     };
     
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        
+        if (context instanceof Activity) {
+            Activity activity = (Activity) context;
+            mActivity = activity;
+            
+            try {
+                mListener = (DeviceDialogListener) activity;
+            } catch (ClassCastException e) {
+                throw new ClassCastException(activity.toString() + " must implement DeviceDialogListener");
+            }
+        }
+    }
+    
     @Override @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         List<BluetoothDevice> pairedDevices = new ArrayList<>(mBluetoothAdapter.getBondedDevices());
@@ -65,22 +81,6 @@ public class DeviceDialogFragment extends DialogFragment {
                     }
                 })
                 .create();
-    }
-    
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        
-        if (context instanceof Activity) {
-            Activity activity = (Activity) context;
-            mActivity = activity;
-
-            try {
-                mListener = (DeviceDialogListener) activity;
-            } catch (ClassCastException e) {
-                throw new ClassCastException(activity.toString() + " must implement DeviceDialogListener");
-            }
-        }
     }
     
     @Override
