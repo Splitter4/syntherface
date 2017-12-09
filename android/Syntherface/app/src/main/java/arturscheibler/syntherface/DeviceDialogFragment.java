@@ -84,8 +84,8 @@ public class DeviceDialogFragment extends DialogFragment {
     }
     
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
 
         // A permission to access the device's coarse location is needed to discover unpaired
         // devices. These permissions are only necessary for Android 6.0 and higher.
